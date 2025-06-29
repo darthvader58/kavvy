@@ -2,6 +2,23 @@
 
 ## Folder Structure
 
+### `all_data/`
+
+This folder contains all data files as CSV.
+
+#### Contents:
+
+- **`publisher_author_data.csv`**  
+  Combined dataset which has data on all the authors and their works for each publisher.
+
+- **`publisher_names_only.csv`**  
+  CSV file containing a list of only publisher names.
+
+- **`publisher_full_data.csv`**  
+  Comprehensive dataset containing full data on all publishers.
+
+---
+
 ### `authorsScrapers/`
 
 This folder contains all scripts and data files related to scraping and analyzing author information.
