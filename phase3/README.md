@@ -4,7 +4,7 @@
 
 Created script that is able to analyze manuscripts and derive details.
 
-Future work will include a recommender model to help users/authors improve their manuscripts.
+ work includes a recommender model to help users/authors improve their manuscripts.
 
 ## Project Structure
 
