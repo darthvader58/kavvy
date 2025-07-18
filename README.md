@@ -1,4 +1,4 @@
-# Kaavy
+# Kavvy
 
 ## Overview
 
