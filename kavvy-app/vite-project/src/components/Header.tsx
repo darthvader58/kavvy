@@ -1,0 +1,136 @@
+// src/components/Header.tsx
+import { useState } from 'react';
+import { Page } from '../types';
+import { useAuth } from '../context/AuthContext';
+
+interface HeaderProps {
+  currentPage: Page;
+  onPageChange: (page: Page) => void;
+}
+
+export function Header({ currentPage, onPageChange }: HeaderProps) {
+  const { user, signOut } = useAuth();
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
+  return (
+    <header className="header">
+      <div className="header-content">
+        <div className="logo" onClick={() => onPageChange('home')}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z"/>
+            <path d="M2 17L12 22L22 17"/>
+            <path d="M2 12L12 17L22 12"/>
+          </svg>
+          <span>KAVVY</span>
+        </div>
+        
+        <div className="search-bar">
+          <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21L16.65 16.65"/>
+          </svg>
+          <input type="text" placeholder="Search publishers, authors, manuscripts..." />
+        </div>
+        
+        <nav className="nav-items">
+          <button
+            className={`nav-item ${currentPage === 'home' ? 'active' : ''}`}
+            onClick={() => onPageChange('home')}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z"/>
+            </svg>
+            <span>Home</span>
+          </button>
+          
+          <button
+            className={`nav-item ${currentPage === 'publishers' ? 'active' : ''}`}
+            onClick={() => onPageChange('publishers')}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 19.5C4 18.837 4.26339 18.2011 4.73223 17.7322C5.20107 17.2634 5.83696 17 6.5 17H20"/>
+              <path d="M6.5 2H20V22H6.5C5.83696 22 5.20107 21.7366 4.73223 21.2678C4.26339 20.7989 4 20.163 4 19.5V4.5C4 3.83696 4.26339 3.20107 4.73223 2.73223C5.20107 2.26339 5.83696 2 6.5 2Z"/>
+            </svg>
+            <span>Publishers</span>
+          </button>
+          
+          <button
+            className={`nav-item ${currentPage === 'matches' ? 'active' : ''}`}
+            onClick={() => onPageChange('matches')}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            <span>Matches</span>
+          </button>
+          
+          <div className="user-menu-container">
+            <button
+              className={`nav-item ${currentPage === 'profile' ? 'active' : ''}`}
+              onClick={() => setShowUserMenu(!showUserMenu)}
+            >
+              <img 
+                src={user?.picture} 
+                alt={user?.name} 
+                style={{ 
+                  width: '24px', 
+                  height: '24px', 
+                  borderRadius: '50%',
+                  objectFit: 'cover'
+                }} 
+              />
+              <span>Me</span>
+            </button>
+
+            {showUserMenu && (
+              <div className="user-dropdown">
+                <div className="user-dropdown-header">
+                  <img src={user?.picture} alt={user?.name} />
+                  <div>
+                    <div className="user-dropdown-name">{user?.name}</div>
+                    <div className="user-dropdown-email">{user?.email}</div>
+                  </div>
+                </div>
+                <button 
+                  className="user-dropdown-item"
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    onPageChange('profile');
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                  View Profile
+                </button>
+                <button className="user-dropdown-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24"/>
+                  </svg>
+                  Settings
+                </button>
+                <hr style={{ margin: '0.5rem 0', border: 'none', borderTop: '1px solid var(--border)' }} />
+                <button 
+                  className="user-dropdown-item"
+                  onClick={() => {
+                    setShowUserMenu(false);
+                    signOut();
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
+        </nav>
+      </div>
+    </header>
+  );
+}
