@@ -6,6 +6,8 @@ import { HomePage } from './pages/HomePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { PublishersPage } from './pages/PublishersPage';
 import { MatchesPage } from './pages/MatchesPage';
+import { ManuscriptWriterPage } from './pages/ManuscriptWriterPage';
+import { UpgradePage } from './pages/UpgradePage';
 import { LoginPage } from './pages/LoginPage';
 import { Page } from './types';
 import './App.css';
@@ -22,7 +24,6 @@ function AppContent() {
       setTheme(savedTheme);
       document.documentElement.setAttribute('data-theme', savedTheme);
     } else {
-      // Check system preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const systemTheme = prefersDark ? 'dark' : 'light';
       setTheme(systemTheme);
@@ -35,6 +36,11 @@ function AppContent() {
     setTheme(newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('kavvy_theme', newTheme);
+  };
+
+  const handlePageChange = (page: Page) => {
+    console.log('Navigating to:', page); // Debug log
+    setCurrentPage(page);
   };
 
   if (loading) {
@@ -66,6 +72,8 @@ function AppContent() {
   };
 
   const renderPage = () => {
+    console.log('Current page:', currentPage); // Debug log
+    
     switch (currentPage) {
       case 'home':
         return <HomePage author={author} />;
@@ -75,7 +83,12 @@ function AppContent() {
         return <PublishersPage author={author} />;
       case 'matches':
         return <MatchesPage author={author} />;
+      case 'writer':
+        return <ManuscriptWriterPage author={author} />;
+      case 'upgrade':
+        return <UpgradePage author={author} />;
       default:
+        console.log('Unknown page, defaulting to home');
         return <HomePage author={author} />;
     }
   };
@@ -84,11 +97,13 @@ function AppContent() {
     <div className="app">
       <Header 
         currentPage={currentPage} 
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
         theme={theme}
         onToggleTheme={toggleTheme}
       />
-      {renderPage()}
+      <div key={currentPage}>
+        {renderPage()}
+      </div>
     </div>
   );
 }
