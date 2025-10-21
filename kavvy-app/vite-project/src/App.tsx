@@ -1,5 +1,5 @@
 // src/App.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Header } from './components/Header';
 import { HomePage } from './pages/HomePage';
@@ -13,6 +13,29 @@ import './App.css';
 function AppContent() {
   const { user, loading } = useAuth();
   const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  // Initialize theme from localStorage or system preference
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('kavvy_theme') as 'light' | 'dark' | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+      // Check system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const systemTheme = prefersDark ? 'dark' : 'light';
+      setTheme(systemTheme);
+      document.documentElement.setAttribute('data-theme', systemTheme);
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('kavvy_theme', newTheme);
+  };
 
   if (loading) {
     return (
@@ -59,7 +82,12 @@ function AppContent() {
 
   return (
     <div className="app">
-      <Header currentPage={currentPage} onPageChange={setCurrentPage} />
+      <Header 
+        currentPage={currentPage} 
+        onPageChange={setCurrentPage}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+      />
       {renderPage()}
     </div>
   );

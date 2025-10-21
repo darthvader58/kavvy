@@ -1,5 +1,5 @@
 // src/pages/MatchesPage.tsx
-import { Author, Match } from '../types';
+import type { Author, Match } from '../types';
 import { publishers } from '../data/publishers';
 import { PublisherCard } from '../components/PublisherCard';
 

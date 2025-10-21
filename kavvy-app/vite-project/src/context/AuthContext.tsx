@@ -1,12 +1,12 @@
 // src/context/AuthContext.tsx
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { AuthContextType, User, Author } from '../types';
+import type { AuthContextType, User } from '../types';
 import { createDefaultAuthor, mockAuthors } from '../data/mockData';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Google OAuth Configuration
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID_HERE';
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -17,18 +17,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in (from memory storage)
+    // Check if user is already logged in (from session storage)
     const storedUser = sessionStorage.getItem('kavvy_user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
+        sessionStorage.removeItem('kavvy_user');
+      }
     }
     setLoading(false);
 
-    // Load Google Sign-In script
-    loadGoogleScript();
+    // Load Google Sign-In script only if client ID is provided
+    if (GOOGLE_CLIENT_ID) {
+      loadGoogleScript();
+    }
   }, []);
 
   const loadGoogleScript = () => {
+    // Check if script already exists
+    if (document.querySelector('script[src="https://accounts.google.com/gsi/client"]')) {
+      return;
+    }
+
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
     script.async = true;
@@ -36,11 +48,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     document.body.appendChild(script);
 
     script.onload = () => {
-      if (window.google) {
-        window.google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleGoogleResponse,
-        });
+      if (window.google && GOOGLE_CLIENT_ID) {
+        try {
+          window.google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: handleGoogleResponse,
+          });
+        } catch (error) {
+          console.error('Error initializing Google Sign-In:', error);
+        }
       }
     };
   };
@@ -76,11 +92,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signIn = async () => {
     try {
-      if (window.google) {
-        window.google.accounts.id.prompt();
-      }
+      console.log('🔵 signIn function called');
+      
+      // Use demo user
+      const demoUser: User = {
+        id: '1',
+        email: 'sarah.mitchell@email.com',
+        name: 'Sarah Mitchell',
+        picture: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+        googleId: 'demo-user-1',
+        author: mockAuthors[0]
+      };
+      
+      console.log('🟢 Demo user created:', demoUser);
+      console.log('🟢 Setting user state...');
+      
+      setUser(demoUser);
+      sessionStorage.setItem('kavvy_user', JSON.stringify(demoUser));
+      
+      console.log('✅ User state set, user should be:', demoUser.name);
+      
+      // Force a small delay to ensure state updates
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
     } catch (error) {
-      console.error('Error signing in:', error);
+      console.error('❌ Error signing in:', error);
     }
   };
 

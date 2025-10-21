@@ -7,19 +7,33 @@ export function LoginPage() {
   const googleButtonRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Render Google Sign-In button
-    if (window.google && googleButtonRef.current) {
-      window.google.accounts.id.renderButton(
-        googleButtonRef.current,
-        {
-          theme: 'filled_blue',
-          size: 'large',
-          text: 'continue_with',
-          shape: 'rectangular',
-          width: 280,
+    // Render Google Sign-In button only if Google is loaded
+    const renderGoogleButton = () => {
+      if (window.google && googleButtonRef.current) {
+        try {
+          window.google.accounts.id.renderButton(
+            googleButtonRef.current,
+            {
+              theme: 'filled_blue',
+              size: 'large',
+              text: 'continue_with',
+              shape: 'rectangular',
+              width: 280,
+            }
+          );
+        } catch (error) {
+          console.log('Google Sign-In not available, using demo mode');
         }
-      );
-    }
+      }
+    };
+
+    // Try to render immediately
+    renderGoogleButton();
+
+    // Also try after a short delay in case script is still loading
+    const timeout = setTimeout(renderGoogleButton, 1000);
+
+    return () => clearTimeout(timeout);
   }, []);
 
   return (
@@ -89,8 +103,19 @@ export function LoginPage() {
               <span>or</span>
             </div>
 
-            <button className="btn-demo" onClick={signIn}>
-              Continue as Demo User
+            <button 
+              className="btn-demo" 
+              onClick={async () => {
+                console.log('🔵 Demo button clicked!');
+                try {
+                  await signIn();
+                  console.log('✅ Sign in completed');
+                } catch (error) {
+                  console.error('❌ Sign in error:', error);
+                }
+              }}
+            >
+              Continue as Guest
             </button>
 
             <p className="login-terms">

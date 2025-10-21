@@ -1,4 +1,5 @@
 // src/types/index.ts
+
 export interface Publisher {
   name: string;
   location: string;
@@ -79,4 +80,4 @@ export interface AuthContextType {
   signOut: () => Promise<void>;
 }
 
-export type Page = 'home' | 'profile' | 'publishers' | 'matches';
+export type Page = 'home' | 'profile' | 'publishers' | 'matches' | 'writer';

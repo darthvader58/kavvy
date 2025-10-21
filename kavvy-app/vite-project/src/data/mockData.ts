@@ -205,7 +205,6 @@ export const mockPosts: Post[] = [
   }
 ];
 
-// Default author for new signups
 export const createDefaultAuthor = (user: { id: string; email: string; name: string; picture: string }): Author => {
   return {
     id: user.id,
