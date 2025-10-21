@@ -42,7 +42,7 @@ export function LoginPage() {
         <div className="login-left">
           <div className="login-brand">
             <img 
-              src="/kavvy-logo.svg" 
+              src="/kavvy-logo-white.svg" 
               alt="Kavvy Logo" 
               style={{ height: '48px', width: 'auto' }}
             />
