@@ -714,7 +714,7 @@ body {
 }
 
 .stat-label {
-  color: rgba(255, 255, 255, 1.0);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 0.9rem;
 }
 
@@ -948,7 +948,7 @@ body {
 
 .stat-label {
   font-size: 0.75rem;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .quick-links {
@@ -1296,3 +1296,4 @@ body {
   font-size: 0.9rem;
   background: var(--card-bg);
   color: var(--text);
+}
