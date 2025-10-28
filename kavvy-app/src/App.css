@@ -714,7 +714,8 @@ body {
 }
 
 .stat-label {
-  color: rgba(255, 255, 255, 0.8);
+  /*color: rgba(255, 255, 255, 0.8);*/
+  color: var(--text-light);
   font-size: 0.9rem;
 }
 
@@ -948,7 +949,8 @@ body {
 
 .stat-label {
   font-size: 0.75rem;
-  color: #ffffff;
+  /*color: #ffffff;*/
+  color: var(--text-light);
 }
 
 .quick-links {
