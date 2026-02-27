@@ -80,4 +80,4 @@ export interface AuthContextType {
   signOut: () => Promise<void>;
 }
 
-export type Page = 'home' | 'profile' | 'publishers' | 'matches' | 'writer';
+export type Page = 'home' | 'profile' | 'publishers' | 'matches' | 'writer' | 'waitlist';

@@ -9,6 +9,7 @@ import { MatchesPage } from './pages/MatchesPage';
 import { ManuscriptWriterPage } from './pages/ManuscriptWriterPage';
 import { UpgradePage } from './pages/UpgradePage';
 import { LoginPage } from './pages/LoginPage';
+import { WaitlistPage } from './pages/WaitlistPage';
 import { Page } from './types';
 import './App.css';
 
@@ -16,6 +17,14 @@ function AppContent() {
   const { user, loading } = useAuth();
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  // Check for waitlist route
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path === '/waitlist') {
+      setCurrentPage('waitlist' as Page);
+    }
+  }, []);
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -39,9 +48,21 @@ function AppContent() {
   };
 
   const handlePageChange = (page: Page) => {
-    console.log('Navigating to:', page); // Debug log
+    console.log('Navigating to:', page);
     setCurrentPage(page);
+    
+    // Update URL for waitlist
+    if (page === 'waitlist') {
+      window.history.pushState({}, '', '/waitlist');
+    } else {
+      window.history.pushState({}, '', '/');
+    }
   };
+
+  // Waitlist page doesn't require authentication
+  if (currentPage === 'waitlist') {
+    return <WaitlistPage />;
+  }
 
   if (loading) {
     return (
@@ -72,7 +93,7 @@ function AppContent() {
   };
 
   const renderPage = () => {
-    console.log('Current page:', currentPage); // Debug log
+    console.log('Current page:', currentPage);
     
     switch (currentPage) {
       case 'home':
