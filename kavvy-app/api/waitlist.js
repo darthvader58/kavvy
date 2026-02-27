@@ -35,12 +35,13 @@ const waitlistSchema = new mongoose.Schema({
 const Waitlist = mongoose.models.Waitlist || mongoose.model('Waitlist', waitlistSchema);
 
 export default async function handler(req, res) {
-  // Enable CORS
+  // Enable CORS for all origins
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,PATCH,DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,Content-Type,Accept,Authorization');
 
+  // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
