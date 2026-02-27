@@ -151,11 +151,12 @@ export const api = {
 
   // Waitlist
   async joinWaitlist(data: { email: string; name: string; userType: string; referralSource?: string }) {
-    const response = await fetch(`${API_BASE_URL}/api/waitlist`, {
+    const response = await fetch('/api/waitlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to join waitlist');
@@ -164,7 +165,7 @@ export const api = {
   },
 
   async getWaitlistCount() {
-    const response = await fetch(`${API_BASE_URL}/api/waitlist/count`);
+    const response = await fetch('/api/waitlist');
     if (!response.ok) throw new Error('Failed to fetch waitlist count');
     return response.json();
   }
