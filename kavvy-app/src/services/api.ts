@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5001' : '');
 
 export const api = {
   // Publishers
@@ -8,32 +8,32 @@ export const api = {
     if (filters?.requiresAgent !== undefined) params.append('requiresAgent', String(filters.requiresAgent));
     if (filters?.openCalls !== undefined) params.append('openCalls', String(filters.openCalls));
     
-    const response = await fetch(`${API_URL}/api/publishers?${params}`);
+    const response = await fetch(`${API_BASE_URL}/api/publishers?${params}`);
     if (!response.ok) throw new Error('Failed to fetch publishers');
     return response.json();
   },
 
   async getPublisher(id: string) {
-    const response = await fetch(`${API_URL}/api/publishers/${id}`);
+    const response = await fetch(`${API_BASE_URL}/api/publishers/${id}`);
     if (!response.ok) throw new Error('Failed to fetch publisher');
     return response.json();
   },
 
   // Authors
   async getAuthors() {
-    const response = await fetch(`${API_URL}/api/authors`);
+    const response = await fetch(`${API_BASE_URL}/api/authors`);
     if (!response.ok) throw new Error('Failed to fetch authors');
     return response.json();
   },
 
   async getAuthor(id: string) {
-    const response = await fetch(`${API_URL}/api/authors/${id}`);
+    const response = await fetch(`${API_BASE_URL}/api/authors/${id}`);
     if (!response.ok) throw new Error('Failed to fetch author');
     return response.json();
   },
 
   async createOrUpdateAuthor(data: any) {
-    const response = await fetch(`${API_URL}/api/authors`, {
+    const response = await fetch(`${API_BASE_URL}/api/authors`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
@@ -44,19 +44,19 @@ export const api = {
 
   // Posts
   async getPosts(limit = 50, skip = 0) {
-    const response = await fetch(`${API_URL}/api/posts?limit=${limit}&skip=${skip}`);
+    const response = await fetch(`${API_BASE_URL}/api/posts?limit=${limit}&skip=${skip}`);
     if (!response.ok) throw new Error('Failed to fetch posts');
     return response.json();
   },
 
   async getPostsByAuthor(authorId: string) {
-    const response = await fetch(`${API_URL}/api/posts/author/${authorId}`);
+    const response = await fetch(`${API_BASE_URL}/api/posts/author/${authorId}`);
     if (!response.ok) throw new Error('Failed to fetch author posts');
     return response.json();
   },
 
   async createPost(data: { authorId: string; content: string; type: string }) {
-    const response = await fetch(`${API_URL}/api/posts`, {
+    const response = await fetch(`${API_BASE_URL}/api/posts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
@@ -66,7 +66,7 @@ export const api = {
   },
 
   async likePost(postId: string, authorId: string) {
-    const response = await fetch(`${API_URL}/api/posts/${postId}/like`, {
+    const response = await fetch(`${API_BASE_URL}/api/posts/${postId}/like`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ authorId })
@@ -76,7 +76,7 @@ export const api = {
   },
 
   async commentOnPost(postId: string, authorId: string, content: string) {
-    const response = await fetch(`${API_URL}/api/posts/${postId}/comment`, {
+    const response = await fetch(`${API_BASE_URL}/api/posts/${postId}/comment`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ authorId, content })
@@ -92,25 +92,25 @@ export const api = {
     if (filters?.genre) params.append('genre', filters.genre);
     if (filters?.status) params.append('status', filters.status);
     
-    const response = await fetch(`${API_URL}/api/manuscripts?${params}`);
+    const response = await fetch(`${API_BASE_URL}/api/manuscripts?${params}`);
     if (!response.ok) throw new Error('Failed to fetch manuscripts');
     return response.json();
   },
 
   async getManuscript(id: string) {
-    const response = await fetch(`${API_URL}/api/manuscripts/${id}`);
+    const response = await fetch(`${API_BASE_URL}/api/manuscripts/${id}`);
     if (!response.ok) throw new Error('Failed to fetch manuscript');
     return response.json();
   },
 
   async getManuscriptsByAuthor(authorId: string) {
-    const response = await fetch(`${API_URL}/api/manuscripts/author/${authorId}`);
+    const response = await fetch(`${API_BASE_URL}/api/manuscripts/author/${authorId}`);
     if (!response.ok) throw new Error('Failed to fetch author manuscripts');
     return response.json();
   },
 
   async createManuscript(data: any) {
-    const response = await fetch(`${API_URL}/api/manuscripts`, {
+    const response = await fetch(`${API_BASE_URL}/api/manuscripts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
@@ -120,7 +120,7 @@ export const api = {
   },
 
   async updateManuscript(id: string, data: any) {
-    const response = await fetch(`${API_URL}/api/manuscripts/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/manuscripts/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
@@ -131,7 +131,7 @@ export const api = {
 
   // Waitlist
   async joinWaitlist(data: { email: string; name: string; userType: string; referralSource?: string }) {
-    const response = await fetch(`${API_URL}/api/waitlist`, {
+    const response = await fetch(`${API_BASE_URL}/api/waitlist`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
@@ -144,7 +144,7 @@ export const api = {
   },
 
   async getWaitlistCount() {
-    const response = await fetch(`${API_URL}/api/waitlist/count`);
+    const response = await fetch(`${API_BASE_URL}/api/waitlist/count`);
     if (!response.ok) throw new Error('Failed to fetch waitlist count');
     return response.json();
   }
