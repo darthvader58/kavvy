@@ -1,20 +1,17 @@
 // src/components/Feed.tsx
-import { Author, Post } from '../types';
+import { Author } from '../types';
 
 interface FeedProps {
   currentAuthor: Author;
-  posts: Post[];
+  posts: any[];
   authors: Author[];
 }
 
 export function Feed({ currentAuthor, posts, authors }: FeedProps) {
-  const getAuthorById = (id: string): Author | undefined => {
-    return authors.find(a => a.id === id);
-  };
-
-  const formatTimeAgo = (date: Date): string => {
+  const formatTimeAgo = (date: string | Date): string => {
     const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
+    const postDate = new Date(date);
+    const diffMs = now.getTime() - postDate.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
@@ -59,17 +56,17 @@ export function Feed({ currentAuthor, posts, authors }: FeedProps) {
       </div>
       
       {posts.map(post => {
-        const author = getAuthorById(post.authorId);
+        const author = post.authorId;
         if (!author) return null;
 
         return (
-          <article key={post.id} className="post">
+          <article key={post._id} className="post">
             <div className="post-header">
               <img src={author.avatar} alt={author.name} className="post-avatar" />
               <div className="post-author-info">
                 <div className="post-author-name">{author.name}</div>
                 <div className="post-author-meta">
-                  {author.genres?.length ? author.genres.join(', ') : 'Author'} • {formatTimeAgo(post.timestamp)}
+                  {author.location || 'Author'} • {formatTimeAgo(post.createdAt)}
                 </div>
               </div>
             </div>
@@ -79,13 +76,13 @@ export function Feed({ currentAuthor, posts, authors }: FeedProps) {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                 </svg>
-                <span>{post.likes}</span>
+                <span>{post.likes?.length || 0}</span>
               </button>
               <button className="post-action">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                 </svg>
-                <span>{post.comments}</span>
+                <span>{post.comments?.length || 0}</span>
               </button>
               <button className="post-action">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

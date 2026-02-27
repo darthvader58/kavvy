@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { api } from '../services/api';
 
 export function WaitlistPage() {
   const [formData, setFormData] = useState({
@@ -16,26 +17,14 @@ export function WaitlistPage() {
     setStatus('loading');
 
     try {
-      const response = await fetch('/api/waitlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setStatus('success');
-        setMessage(data.message);
-        setPosition(data.position);
-        setFormData({ name: '', email: '', userType: 'author', referralSource: '' });
-      } else {
-        setStatus('error');
-        setMessage(data.message || 'Something went wrong');
-      }
-    } catch (error) {
+      const data = await api.joinWaitlist(formData);
+      setStatus('success');
+      setMessage(data.message);
+      setPosition(data.position);
+      setFormData({ name: '', email: '', userType: 'author', referralSource: '' });
+    } catch (error: any) {
       setStatus('error');
-      setMessage('Failed to connect to server');
+      setMessage(error.message || 'Failed to join waitlist');
     }
   };
 

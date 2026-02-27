@@ -119,52 +119,70 @@ async function seedAuthors() {
     // Create authors and manuscripts
     let authorCount = 0;
     let manuscriptCount = 0;
+    let skippedCount = 0;
 
     for (const [authorName, authorData] of authorMap) {
       const firstBook = authorData.books[0];
       const totalWorks = firstBook.worksCount;
       
-      // Create author
-      const author = new Author({
-        name: authorName,
-        email: `${authorName.toLowerCase().replace(/[^a-z0-9]/g, '')}@example.com`,
-        avatar: generateAvatar(authorName),
-        bio: generateBio(authorName, firstBook.genre, totalWorks),
-        genres: [...new Set(authorData.books.map(b => b.genre).filter(Boolean))],
-        subjects: [...new Set(authorData.books.map(b => b.genre).filter(Boolean))],
-        manuscriptStatus: Math.random() > 0.5 ? 'complete' : 'polishing',
-        hasAgent: Math.random() > 0.6,
-        previousPublications: totalWorks,
-        location: getRandomLocation(),
-        socialMedia: {
-          twitter: Math.random() > 0.5 ? `@${authorName.replace(/\s+/g, '')}` : undefined,
-          linkedin: Math.random() > 0.5 ? `linkedin.com/in/${authorName.toLowerCase().replace(/\s+/g, '-')}` : undefined
-        }
-      });
-
-      await author.save();
-      authorCount++;
-
-      // Create manuscripts for each book
-      for (const book of authorData.books) {
-        if (!book.title) continue;
-        
-        const manuscript = new Manuscript({
-          authorId: author._id,
-          title: book.title,
-          genre: book.genre,
-          subjects: [book.genre].filter(Boolean),
-          status: Math.random() > 0.3 ? 'published' : 'complete',
-          wordCount: book.pages ? book.pages * 250 : Math.floor(Math.random() * 100000) + 50000,
-          pageCount: book.pages || Math.floor(Math.random() * 400) + 100,
-          synopsis: `A compelling work in ${book.genre || 'fiction'} that explores...`,
-          goodreadsRating: book.rating,
-          completionDate: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000)
+      // Generate unique email with timestamp to avoid duplicates
+      const baseEmail = authorName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const email = `${baseEmail}${Date.now()}${Math.floor(Math.random() * 1000)}@example.com`;
+      
+      try {
+        // Create author
+        const author = new Author({
+          name: authorName,
+          email: email,
+          avatar: generateAvatar(authorName),
+          bio: generateBio(authorName, firstBook.genre, totalWorks),
+          genres: [...new Set(authorData.books.map(b => b.genre).filter(Boolean))],
+          subjects: [...new Set(authorData.books.map(b => b.genre).filter(Boolean))],
+          manuscriptStatus: Math.random() > 0.5 ? 'complete' : 'polishing',
+          hasAgent: Math.random() > 0.6,
+          previousPublications: totalWorks,
+          location: getRandomLocation(),
+          socialMedia: {
+            twitter: Math.random() > 0.5 ? `@${authorName.replace(/\s+/g, '')}` : undefined,
+            linkedin: Math.random() > 0.5 ? `linkedin.com/in/${authorName.toLowerCase().replace(/\s+/g, '-')}` : undefined
+          }
         });
 
-        await manuscript.save();
-        manuscriptCount++;
+        await author.save();
+        authorCount++;
+
+        // Create manuscripts for each book
+        for (const book of authorData.books) {
+          if (!book.title) continue;
+          
+          const manuscript = new Manuscript({
+            authorId: author._id,
+            title: book.title,
+            genre: book.genre,
+            subjects: [book.genre].filter(Boolean),
+            status: Math.random() > 0.3 ? 'published' : 'complete',
+            wordCount: book.pages ? book.pages * 250 : Math.floor(Math.random() * 100000) + 50000,
+            pageCount: book.pages || Math.floor(Math.random() * 400) + 100,
+            synopsis: `A compelling work in ${book.genre || 'fiction'} that explores...`,
+            goodreadsRating: book.rating,
+            completionDate: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000)
+          });
+
+          await manuscript.save();
+          manuscriptCount++;
+        }
+      } catch (error) {
+        if (error.code === 11000) {
+          // Duplicate key error - skip this author
+          skippedCount++;
+          continue;
+        }
+        throw error;
       }
+    }
+
+    if (skippedCount > 0) {
+      console.log(`⚠️  Skipped ${skippedCount} duplicate authors`);
     }
 
     console.log(`✅ Seeded ${authorCount} authors`);

@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "seed": "node scripts/seedPublishers.js"
+    "seed": "node scripts/seedPublishers.js",
+    "seed:all": "node scripts/seedPublishers.js && node scripts/seedAuthors.js && node scripts/seedPosts.js"
   },
   "dependencies": {
     "express": "^4.18.2",

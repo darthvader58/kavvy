@@ -5,11 +5,13 @@ import dotenv from 'dotenv';
 import authorRoutes from './routes/authors.js';
 import publisherRoutes from './routes/publishers.js';
 import waitlistRoutes from './routes/waitlist.js';
+import manuscriptRoutes from './routes/manuscripts.js';
+import postRoutes from './routes/posts.js';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Middleware
 app.use(cors());
@@ -24,6 +26,8 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/kavvy')
 app.use('/api/authors', authorRoutes);
 app.use('/api/publishers', publisherRoutes);
 app.use('/api/waitlist', waitlistRoutes);
+app.use('/api/manuscripts', manuscriptRoutes);
+app.use('/api/posts', postRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Kavvy API is running' });
