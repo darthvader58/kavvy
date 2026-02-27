@@ -1,4 +1,34 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:5001' : '');
+function isLoopbackHost(hostname: string) {
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' || hostname === '0.0.0.0';
+}
+
+function resolveApiBaseUrl() {
+  const configuredUrl = import.meta.env.VITE_API_URL?.trim();
+
+  if (!configuredUrl) {
+    return import.meta.env.DEV ? 'http://localhost:5001' : '';
+  }
+
+  try {
+    const resolvedUrl = new URL(configuredUrl, typeof window !== 'undefined' ? window.location.origin : undefined);
+
+    // Ignore localhost API targets in deployed environments where they are unreachable.
+    if (typeof window !== 'undefined') {
+      const isLocalBrowser = isLoopbackHost(window.location.hostname);
+      const isConfiguredLocalhost = isLoopbackHost(resolvedUrl.hostname);
+
+      if (!isLocalBrowser && isConfiguredLocalhost) {
+        return '';
+      }
+    }
+
+    return resolvedUrl.origin;
+  } catch {
+    return configuredUrl.replace(/\/$/, '');
+  }
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 export const api = {
   // Publishers
@@ -131,11 +161,12 @@ export const api = {
 
   // Waitlist
   async joinWaitlist(data: { email: string; name: string; userType: string; referralSource?: string }) {
-    const response = await fetch(`${API_BASE_URL}/api/waitlist`, {
+    const response = await fetch('/api/waitlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to join waitlist');
@@ -144,7 +175,7 @@ export const api = {
   },
 
   async getWaitlistCount() {
-    const response = await fetch(`${API_BASE_URL}/api/waitlist/count`);
+    const response = await fetch('/api/waitlist');
     if (!response.ok) throw new Error('Failed to fetch waitlist count');
     return response.json();
   }
