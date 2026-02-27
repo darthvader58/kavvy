@@ -1,7 +1,3 @@
-function isLoopbackHost(hostname: string) {
-  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' || hostname === '0.0.0.0';
-}
-
 function resolveApiBaseUrl() {
   const configuredUrl = import.meta.env.VITE_API_URL?.trim();
 
@@ -9,23 +5,17 @@ function resolveApiBaseUrl() {
     return import.meta.env.DEV ? 'http://localhost:5001' : '';
   }
 
-  try {
-    const resolvedUrl = new URL(configuredUrl, typeof window !== 'undefined' ? window.location.origin : undefined);
+  // Ignore localhost API targets in deployed environments where they are unreachable.
+  if (typeof window !== 'undefined') {
+    const isLocalBrowser = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    const isConfiguredLocalhost = /^(https?:\/\/)?(localhost|127\.0\.0\.1)(:\d+)?$/i.test(configuredUrl);
 
-    // Ignore localhost API targets in deployed environments where they are unreachable.
-    if (typeof window !== 'undefined') {
-      const isLocalBrowser = isLoopbackHost(window.location.hostname);
-      const isConfiguredLocalhost = isLoopbackHost(resolvedUrl.hostname);
-
-      if (!isLocalBrowser && isConfiguredLocalhost) {
-        return '';
-      }
+    if (!isLocalBrowser && isConfiguredLocalhost) {
+      return '';
     }
-
-    return resolvedUrl.origin;
-  } catch {
-    return configuredUrl.replace(/\/$/, '');
   }
+
+  return configuredUrl.replace(/\/$/, '');
 }
 
 const API_BASE_URL = resolveApiBaseUrl();
